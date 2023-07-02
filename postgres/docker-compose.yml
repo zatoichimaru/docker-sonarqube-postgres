@@ -1,0 +1,45 @@
+version: '3.8'
+services:
+
+    postgres_prod:
+        image: postgres:15
+        container_name: postgres_prod
+        restart: unless-stopped
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+        ports:
+            - 5432:5432
+        environment:
+            POSTGRES_USER: sonar_prod
+            POSTGRES_PASSWORD: sonar_prod
+            POSTGRES_DB: sonar_prod
+        volumes:
+            - postgres_prod_data:/data/postgres
+        networks:
+            - postgres_network
+
+    postgres_qa:
+        image: postgres:15
+        container_name: postgres_qa
+        restart: unless-stopped
+        ports:
+            - 5433:5432
+        environment:
+            POSTGRES_USER: sonar_qa
+            POSTGRES_PASSWORD: sonar_qa
+            POSTGRES_DB: sonar_qa
+        volumes:
+            - postgres_qa_data:/data/postgres
+        networks:
+            - postgres_network
+
+volumes:
+    postgres_prod_data:
+    postgres_qa_data:
+
+networks:
+    postgres_network:
+        driver: bridge

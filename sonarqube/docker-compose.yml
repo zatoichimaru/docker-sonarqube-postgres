@@ -1,0 +1,49 @@
+version: '3.8'
+services:
+    sonarqube_prod:
+        image: sonarqube:10.1.0-community
+        container_name: sonarqube_prod
+        external_links:
+            - postgres_prod:5432
+        environment:
+            SONARQUBE_JDBC_URL: jdbc:postgresql://postgres_prod:5432/sonar_prod
+            SONARQUBE_JDBC_USERNAME: sonar_prod
+            SONARQUBE_JDBC_PASSWORD: sonar_prod
+        volumes:
+            - sonarqube_prod_data:/opt/sonarqube/data
+            - sonarqube_prod_extensions:/opt/sonarqube/extensions
+            - sonarqube_prod_logs:/opt/sonarqube/logs
+        ports:
+            - "9000:9000"
+        networks:
+           - sonarqube_network
+
+    sonarqube_qa:
+        image: sonarqube:10.1.0-community
+        container_name: sonarqube_qa
+        external_links:
+            - postgres_qa:5433
+        environment:
+            SONARQUBE_JDBC_URL: jdbc:postgresql://postgres_qa:5432/sonar_qa
+            SONARQUBE_JDBC_USERNAME: sonar_qa
+            SONARQUBE_JDBC_PASSWORD: sonar_qa
+        volumes:
+            - sonarqube_qa_data:/opt/sonarqube/data
+            - sonarqube_qa_extensions:/opt/sonarqube/extensions
+            - sonarqube_qa_logs:/opt/sonarqube/logs
+        ports:
+            - "9002:9000"
+        networks:
+           - sonarqube_network
+
+volumes:
+    sonarqube_prod_data:
+    sonarqube_prod_extensions:
+    sonarqube_prod_logs:
+    sonarqube_qa_data:
+    sonarqube_qa_extensions:
+    sonarqube_qa_logs:
+
+networks:
+    sonarqube_network:
+        driver: bridge
